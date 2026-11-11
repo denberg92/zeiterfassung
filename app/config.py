@@ -34,6 +34,9 @@ class Settings:
         self.ui_dir = os.environ.get("ZE_UI_DIR", "")
         # Automatischer Berichtsversand per Mail (Hintergrund-Thread); in Tests aus
         self.mail_scheduler = _bool("ZE_MAIL_SCHEDULER", True)
+        # Mailtransport: smtp (Standard) oder graph_socket (externer Graph-Dienst über Unix-Socket)
+        self.mail_transport = os.environ.get("ZE_MAIL_TRANSPORT", "smtp").strip().lower()
+        self.graph_socket = os.environ.get("ZE_GRAPH_SOCKET", "/run/graphmailer/mail.sock").strip()
         # Regelmäßig bei GitHub nach neuen Versionen sehen (Paketquelle fürs Paket-Zentrum)
         self.update_check = _bool("ZE_UPDATE_CHECK", True)
         # Optional: Startpasswort für den ersten Admin
