@@ -9,11 +9,13 @@ from app import graph_mailer, mailer
 def test_graph_socket_protocol_and_attachments(tmp_path):
     path = str(tmp_path / "mail.sock")
     received = {}
+    ready = threading.Event()
 
     def server():
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as listener:
             listener.bind(path)
             listener.listen(1)
+            ready.set()
             conn, _ = listener.accept()
             with conn:
                 data = bytearray()
@@ -27,6 +29,7 @@ def test_graph_socket_protocol_and_attachments(tmp_path):
 
     thread = threading.Thread(target=server, daemon=True)
     thread.start()
+    assert ready.wait(timeout=2)
     graph_mailer.send(
         "test@example.de", "Test", "Nachricht",
         [("bericht.pdf", b"%PDF-test", "application/pdf")],
@@ -46,10 +49,13 @@ def test_graph_socket_protocol_and_attachments(tmp_path):
 def test_graph_socket_error_response(tmp_path):
     path = str(tmp_path / "mail.sock")
 
+    ready = threading.Event()
+
     def server():
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as listener:
             listener.bind(path)
             listener.listen(1)
+            ready.set()
             conn, _ = listener.accept()
             with conn:
                 while conn.recv(4096):
@@ -58,6 +64,7 @@ def test_graph_socket_error_response(tmp_path):
 
     thread = threading.Thread(target=server, daemon=True)
     thread.start()
+    assert ready.wait(timeout=2)
     try:
         graph_mailer.send("test@example.de", "Test", "Text", socket_path=path)
         assert False, "GraphMailError erwartet"
