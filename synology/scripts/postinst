@@ -14,6 +14,15 @@ if [ ! -f "${CONFIG}" ]; then
     } > "${CONFIG}"
 fi
 
+# Bestehende Konfiguration bei Updates erhalten; fehlende Fork-Optionen ergänzen.
+# Der Graph-Dienst bleibt separat und seine Zertifikate werden nicht im SPK abgelegt.
+if ! grep -q '^ZE_MAIL_TRANSPORT=' "${CONFIG}"; then
+    echo 'ZE_MAIL_TRANSPORT="graph_socket"' >> "${CONFIG}"
+fi
+if ! grep -q '^ZE_GRAPH_SOCKET=' "${CONFIG}"; then
+    echo 'ZE_GRAPH_SOCKET="/run/graphmailer/mail.sock"' >> "${CONFIG}"
+fi
+
 set -- $(find_python)
 PY="$1"; TAG="$2"
 if [ -n "$PY" ]; then

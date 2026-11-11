@@ -18,6 +18,10 @@ start_daemon() {
     export ZE_PORT="${ZE_PORT:-8765}"
     export ZE_HOST="${ZE_HOST:-0.0.0.0}"
     export ZE_PUBLIC_URL ZE_ROOT_PATH ZE_COOKIE_SECURE ZE_TIMEZONE
+    export ZE_MAIL_TRANSPORT ZE_GRAPH_SOCKET ZE_UPDATE_REPO
+    ZE_GRAPH_SOCKET="${ZE_GRAPH_SOCKET:-/run/graphmailer/mail.sock}"
+    ZE_UPDATE_REPO="${ZE_UPDATE_REPO:-denberg92/zeiterfassung}"
+    export ZE_GRAPH_SOCKET ZE_UPDATE_REPO
     export ZE_UI_DIR="${PKGDEST}/ui"
     PYTHONPATH="$(lib_path "$PY" "$TAG")"
     if [ -z "$PYTHONPATH" ]; then

@@ -1,5 +1,12 @@
 # Änderungen
 
+## [0.27.1] – 2026-11-11
+
+### Geändert
+- Fork-Ausgabe mit optionalem Microsoft-Graph-Mailtransport über den lokalen Unix-Socket.
+- Synology-Paketquelle zeigt auf den Fork; vorhandene Konfiguration bleibt bei Updates erhalten.
+
+
 Alle nennenswerten Änderungen an diesem Projekt. Versionen nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [0.27.0] – 2026-11-10

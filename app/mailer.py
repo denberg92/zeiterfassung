@@ -18,6 +18,7 @@ from email.utils import formataddr, make_msgid
 from typing import Dict, List, Optional, Tuple
 
 from .config import settings
+from .graph_mailer import GraphMailError, send as send_graph_mail
 from .db import audit, connect, get_setting
 from .report_files import build_data, parse_period, previous_month, render_data
 from .timeutil import fmt_duration, now_utc, now_utc_str, parse_utc, to_local, to_utc_str
@@ -58,13 +59,24 @@ def mail_formats(conn: sqlite3.Connection) -> List[str]:
 
 def send_mail(conn: sqlite3.Connection, to: str, subject: str, body: str,
               attachments: Optional[List[Tuple[str, bytes, str]]] = None) -> None:
+    if not valid_email(to):
+        raise MailError(f"Ungültige Empfängeradresse: {to}")
+
+    transport = settings.mail_transport
+    if transport == "graph_socket":
+        try:
+            send_graph_mail(to, subject, body, attachments, settings.graph_socket)
+        except GraphMailError as e:
+            raise MailError(str(e))
+        return
+    if transport != "smtp":
+        raise MailError(f"Unbekanntes Mailtransport-Verfahren: {transport}")
+
     cfg = smtp_config(conn)
     if not cfg["host"]:
         raise MailError("Kein Mailserver eingetragen (Verwaltung → Einstellungen → Mailversand)")
     if not valid_email(cfg["from"]):
         raise MailError("Absenderadresse fehlt oder ist ungültig")
-    if not valid_email(to):
-        raise MailError(f"Ungültige Empfängeradresse: {to}")
     msg = EmailMessage()
     msg["From"] = formataddr((cfg["from_name"], cfg["from"]))
     msg["To"] = to
@@ -173,7 +185,11 @@ def run_due(conn: sqlite3.Connection, now: Optional[datetime] = None) -> List[Di
     """Fällige Berichte an alle Mitarbeiter mit Mailadresse schicken (einmal pro Bericht)."""
     now = now or now_utc()
     periods = due_periods(conn, to_local(now))
-    if not periods or not smtp_config(conn)["host"]:
+    if not periods:
+        return []
+    if settings.mail_transport == "smtp" and not smtp_config(conn)["host"]:
+        return []
+    if settings.mail_transport not in ("smtp", "graph_socket"):
         return []
     results = []
     users = conn.execute(
