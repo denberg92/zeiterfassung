@@ -160,6 +160,32 @@ Paket-Zentrum zum Aktualisieren. Einmalig einrichten:
 Die App prüft etwa alle 30 Minuten (oder per „Jetzt prüfen“ unter Verwaltung → Sicherung & Updates), lädt eine
 neue SPK auf die NAS und bietet sie dort an. Die Paketquelle antwortet nur im lokalen Netz.
 
+### Microsoft Graph statt SMTP (optional)
+
+Der Mailversand kann alternativ über einen externen lokalen Graph-Maildienst erfolgen. Das ist für
+Installationen gedacht, bei denen Microsoft 365 mit zertifikatsbasierter App-Authentifizierung
+verwendet wird. Das Zertifikat und die Graph-Anmeldedaten gehören **nicht** in dieses Repository
+und nicht in das SPK-Paket.
+
+Voraussetzung ist ein separat betriebener Dienst, der den Unix-Socket
+`/run/graphmailer/mail.sock` bereitstellt und das dokumentierte JSON-Zeilenprotokoll verwendet.
+Der Paketbenutzer `zeiterfassung` benötigt Schreib-/Leserechte auf den Socket (üblicherweise über
+eine gemeinsame IPC-Gruppe). Der Graph-Dienst verwaltet Absenderadresse, Zertifikat und Token selbst.
+
+Für die Umschaltung auf der Synology in
+`/var/packages/zeiterfassung/var/config.env` ergänzen:
+
+```sh
+ZE_MAIL_TRANSPORT="graph_socket"
+ZE_GRAPH_SOCKET="/run/graphmailer/mail.sock"
+```
+
+Anschließend das Paket neu starten. Ohne diese Einstellung bleibt SMTP der Standard. Bei
+`graph_socket` werden Testmails, manuell versendete Berichte und automatische Monats-/Jahresberichte
+über denselben Graph-Dienst verschickt. PDF- und Excel-Anhänge werden als Base64 übertragen; je
+Anhang gilt eine Grenze von 3 MiB, je Mailauftrag 12 MiB. Fehler des lokalen Dienstes werden im
+Mailversand als Fehler zurückgegeben und bei automatischen Berichten wie bisher protokolliert.
+
 ### Datensicherung
 
 Die App sichert die Datenbank jede Nacht (Standard 2 Uhr) und behält die letzten 7 Sicherungen im
