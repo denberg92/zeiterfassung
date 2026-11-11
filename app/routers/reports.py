@@ -237,7 +237,7 @@ def mail_report(data: MailReportIn, user=Depends(current_user), conn: sqlite3.Co
     except ValueError as e:
         raise HTTPException(400, str(e))
     except MailError as e:
-        raise HTTPException(502 if smtp_config(conn)["host"] else 400, str(e))
+        raise HTTPException(502 if app_settings.mail_transport == "graph_socket" or smtp_config(conn)["host"] else 400, str(e))
     return {"ok": True, "to": to, "message": f"Bericht an {to} verschickt"}
 
 
@@ -261,7 +261,7 @@ def mail_test(data: MailTestIn, admin=Depends(admin_user), conn: sqlite3.Connect
                   "Hallo,\n\nder Mailversand der Zeiterfassung funktioniert.\n\n"
                   "Monats- und Jahresberichte kommen ab jetzt an die Adressen der Mitarbeiter.")
     except MailError as e:
-        raise HTTPException(502 if smtp_config(conn)["host"] else 400, str(e))
+        raise HTTPException(502 if app_settings.mail_transport == "graph_socket" or smtp_config(conn)["host"] else 400, str(e))
     audit(conn, admin["id"], "mail_test", "", data.to)
     return {"ok": True, "message": f"Testmail an {data.to.strip()} verschickt"}
 
