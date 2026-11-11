@@ -19,7 +19,9 @@ jobs:
           # Python 3.8/3.9 entsprechen dem Python, das DSM 7 mitbringt
           - { python: "3.8", os: ubuntu-22.04 }
           - { python: "3.9", os: ubuntu-22.04 }  # ubuntu-latest (26.04) hat kein 3.9 mehr
+          - { python: "3.10", os: ubuntu-22.04 }
           - { python: "3.11", os: ubuntu-latest }
+          - { python: "3.12", os: ubuntu-latest }
           - { python: "3.13", os: ubuntu-latest }
     steps:
       - uses: actions/checkout@v5
