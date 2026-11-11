@@ -57,7 +57,7 @@ Dir gefällt die Zeiterfassung? Über einen Kaffee freue ich mich – die App bl
 
 - [Funktionen](#funktionen)
 - [Installation](#installation-auf-der-synology) · [Updates](#updates-über-das-paket-zentrum) ·
-  [Datensicherung](#datensicherung) · [Von unterwegs (Reverse Proxy)](#von-unterwegs-erreichbar-machen-reverse-proxy) ·
+  [Datensicherung](#datensicherung) · [Microsoft Graph](#microsoft-graph-statt-smtp-optional) · [Von unterwegs (Reverse Proxy)](#von-unterwegs-erreichbar-machen-reverse-proxy) ·
   [iPhone & NFC](#iphone-und-nfc-einrichten) · [Kiosk-Tablet](#kiosk-tablet) · [Berichte per Mail](#berichte-per-mail) ·
   [Vergessenes Ausstempeln](#vergessenes-ausstempeln) · [Korrekturanträge](#korrekturanträge) ·
   [Monatsabschluss](#monatsabschluss) · [Arbeitszeit & Pausen je Wochentag](#arbeitszeit-und-pausen-je-wochentag) · [Feiertage](#feiertage) · [Urlaubsanträge](#urlaubsanträge-und-vorgesetzte) ·
